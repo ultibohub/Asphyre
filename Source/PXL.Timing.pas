@@ -174,6 +174,11 @@ uses
   Windows, MMSystem,
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  {$DEFINE NATIVE_TIMING_SUPPORT}
+  GlobalConfig, Platform,
+{$ENDIF}
+
 {$IF DEFINED(FPC) AND DEFINED(UNIX)}
   {$DEFINE NATIVE_TIMING_SUPPORT}
   Unix, BaseUnix,
@@ -227,6 +232,10 @@ var
   PerformanceCounter: Int64;
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  Value: Int64;
+{$ENDIF}  
+
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
   Value: TimeVal;
 {$ENDIF}
@@ -245,6 +254,13 @@ begin
   end
   else
     Result := UInt64(timeGetTime) * 1000;
+{$ENDIF}
+
+{$IFDEF ULTIBO}
+  if CLOCK_CYCLES_PER_MICROSECOND > 0 then
+    Result := ClockGetTotal div CLOCK_CYCLES_PER_MICROSECOND
+  else
+    Result := ClockGetTotal;
 {$ENDIF}
 
 {$IF DEFINED(FPC) AND DEFINED(UNIX)}
@@ -274,6 +290,10 @@ var
   PerformanceCounter: Int64;
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  Value: Int64;
+{$ENDIF}  
+
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
   Value: TimeVal;
 {$ENDIF}
@@ -292,6 +312,13 @@ begin
   end
   else
     Result := timeGetTime;
+{$ENDIF}
+
+{$IFDEF ULTIBO}
+  if CLOCK_CYCLES_PER_MILLISECOND > 0 then
+    Result := ClockGetCount div CLOCK_CYCLES_PER_MILLISECOND
+  else
+    Result := ClockGetCount;
 {$ENDIF}
 
 {$IF DEFINED(FPC) AND DEFINED(UNIX)}
@@ -321,6 +348,10 @@ var
   PerformanceCounter: Int64;
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  Value: Int64;
+{$ENDIF}  
+
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
   Value: TimeVal;
 {$ENDIF}
@@ -344,6 +375,13 @@ begin
   end
   else
     Result := timeGetTime;
+{$ENDIF}
+
+{$IFDEF ULTIBO}
+  if CLOCK_CYCLES_PER_MILLISECOND > 0 then
+    Result := ClockGetTotal div CLOCK_CYCLES_PER_MILLISECOND
+  else
+    Result := ClockGetTotal;
 {$ENDIF}
 
 {$IF DEFINED(FPC) AND DEFINED(UNIX)}
@@ -379,7 +417,14 @@ end;
 {$ELSE}
 procedure MicroSleep(const MicroSeconds: UInt64);
 begin
+ {$IFDEF ULTIBO}
+  if MicroSeconds > 1000 then
+   Sleep(MicroSeconds div 1000)
+  else
+   MicrosecondDelay(MicroSeconds); 
+ {$ELSE}
   Sleep(MicroSeconds div 1000);
+ {$ENDIF} 
 end;
 {$ENDIF}
 

@@ -117,7 +117,8 @@ begin
   WriteData($FF);  // $55 for 16-bit
 
   WriteCommand(CMD_SET_ACCESS_CTRL);
-  WriteData($88); // defines RGB/BGR and horizontal/vertical memory direction.
+  WriteData($00); // defines RGB/BGR and horizontal/vertical memory direction. 
+                  // Note: Was $88 which does not seem to be the correct value for InversePortrait from the datasheet
 
   WriteCommand(CMD_SET_TEARING_FX);
   WriteData($00);

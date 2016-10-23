@@ -327,8 +327,13 @@ const
   PrevChar = '/';
   NewChar = '\';
 {$ELSE}
-  PrevChar = '\';
-  NewChar = '/';
+  {$IFDEF ULTIBO}
+    PrevChar = '/';
+    NewChar = '\';
+  {$ELSE}
+    PrevChar = '\';
+    NewChar = '/';
+  {$ENDIF}  
 {$ENDIF}
 var
   I: Integer;

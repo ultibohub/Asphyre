@@ -23,9 +23,22 @@ interface
   {$DEFINE SRT_RENDER_TO_GDI_ENABLED}
 {$ENDIF}
 
+{ Enable the following option to render directly to a framebuffer surface.
+  Note that this option currently only works on Ultibo. }
+{$DEFINE SRT_RENDER_TO_FB}
+
+{$IF DEFINED(ULTIBO) AND DEFINED(SRT_RENDER_TO_FB)}
+  {$DEFINE SRT_RENDER_TO_FB_ULTIBO}
+  {$DEFINE SRT_RENDER_TO_FB_ENABLED}
+{$ENDIF}
+
 uses
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
   PXL.Surfaces.GDI,
+{$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+  PXL.Surfaces.FB.Ultibo,
 {$ENDIF}
 
   PXL.Types, PXL.Devices, PXL.Surfaces, PXL.SwapChains, PXL.Types.SRT;
@@ -39,6 +52,9 @@ type
     FSurface: TPixelSurface;
   {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
     FPrimarySurface: TGDIPixelSurface;
+  {$ENDIF}
+  {$IFDEF SRT_RENDER_TO_FB_ENABLED}
+    FPrimarySurface: TFBPixelSurface;
   {$ENDIF}
   protected
     function GetDeviceContext: TCustomDeviceContext; override;
@@ -60,6 +76,9 @@ type
   {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
     property PrimarySurface: TGDIPixelSurface read FPrimarySurface;
   {$ENDIF}
+  {$IFDEF SRT_RENDER_TO_FB_ENABLED}
+    property PrimarySurface: TFBPixelSurface read FPrimarySurface;
+  {$ENDIF}
   end;
 
 implementation
@@ -67,6 +86,11 @@ implementation
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
 uses
   Windows;
+{$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+uses
+  GlobalConst, Framebuffer;
 {$ENDIF}
 
 constructor TSRTDevice.Create(const AProvider: TCustomDeviceProvider);
@@ -81,7 +105,11 @@ begin
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
   FPrimarySurface := TGDIPixelSurface.Create;
 {$ELSE}
-  FSurface := TPixelSurface.Create;
+  {$IFDEF SRT_RENDER_TO_FB_ENABLED}
+    FPrimarySurface := TFBPixelSurface.Create;
+  {$ELSE}
+    FSurface := TPixelSurface.Create;
+  {$ENDIF}
 {$ENDIF}
 end;
 
@@ -94,7 +122,13 @@ begin
     FSurface.Free;
   FPrimarySurface.Free;
 {$ELSE}
-  FSurface.Free;
+  {$IFDEF SRT_RENDER_TO_FB_ENABLED}
+    if FSurface <> FPrimarySurface then
+      FSurface.Free;
+    FPrimarySurface.Free;
+  {$ELSE}
+    FSurface.Free;
+  {$ENDIF}
 {$ENDIF}
 
   FContext.Free;
@@ -110,8 +144,39 @@ function TSRTDevice.InitDevice: Boolean;
 var
   SwapChainInfo: PSwapChainInfo;
 {$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+var
+  SwapChainInfo: PSwapChainInfo;
+{$ENDIF}
+
 begin
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
+  SwapChainInfo := SwapChains[0];
+  if SwapChainInfo = nil then
+    Exit(False);
+
+  FPrimarySurface.SetSize(SwapChainInfo.Width, SwapChainInfo.Height, SwapChainInfo.Format);
+
+  if (SwapChainInfo.Format <> TPixelFormat.Unknown) and (FPrimarySurface.PixelFormat <> SwapChainInfo.Format) then
+  begin
+    if (FSurface = nil) or (FSurface = FPrimarySurface) then
+      FSurface := TPixelSurface.Create;
+
+    FSurface.SetSize(FPrimarySurface.Size, SwapChainInfo.Format);
+  end
+  else
+  begin
+    if (FSurface <> FPrimarySurface) and (FSurface <> nil) then
+      FSurface.Free;
+
+    FSurface := FPrimarySurface;
+  end;
+
+  FSurface.Clear(0);
+{$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
   SwapChainInfo := SwapChains[0];
   if SwapChainInfo = nil then
     Exit(False);
@@ -170,16 +235,20 @@ begin
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
   Result := SwapChainIndex = 0;
 {$ELSE}
-  SwapChainInfo := SwapChains[SwapChainIndex];
-  if SwapChainInfo = nil then
-    Exit(False);
-
-  FSurface.SetSize(SwapChainInfo.Width, SwapChainInfo.Height, SwapChainInfo.Format);
-  SwapChainInfo.Format := FSurface.PixelFormat;
-
-  FContextWriter.SurfaceSize := FSurface.Size;
-
-  Result := True;
+  {$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+    Result := SwapChainIndex = 0;
+  {$ELSE}
+    SwapChainInfo := SwapChains[SwapChainIndex];
+    if SwapChainInfo = nil then
+      Exit(False);
+    
+    FSurface.SetSize(SwapChainInfo.Width, SwapChainInfo.Height, SwapChainInfo.Format);
+    SwapChainInfo.Format := FSurface.PixelFormat;
+    
+    FContextWriter.SurfaceSize := FSurface.Size;
+    
+    Result := True;
+  {$ENDIF}  
 {$ENDIF}
 end;
 
@@ -189,6 +258,12 @@ var
   SwapChainInfo: PSwapChainInfo;
   DestDC: TUntypedHandle;
 {$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+var
+  SwapChainInfo: PSwapChainInfo;
+{$ENDIF}
+
 begin
 {$IFDEF SRT_RENDER_TO_GDI_ENABLED}
   SwapChainInfo := SwapChains[0];
@@ -207,6 +282,19 @@ begin
   finally
     ReleaseDC(SwapChainInfo.WindowHandle, DestDC);
   end;
+{$ENDIF}
+
+{$IFDEF SRT_RENDER_TO_FB_ULTIBO}
+  SwapChainInfo := SwapChains[0];
+  if SwapChainInfo = nil then
+    Exit(False);
+
+  if FSurface <> FPrimarySurface then
+    FPrimarySurface.CopyFrom(FSurface);
+
+  FPrimarySurface.ResetAlpha(False);
+
+  FPrimarySurface.PutRect(SwapChainInfo.WindowHandle, ZeroPoint2px, Point2px(SwapChainInfo.Width, SwapChainInfo.Height), ZeroPoint2px, FPrimarySurface.Size);
 {$ENDIF}
 
   Result := True;

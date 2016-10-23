@@ -34,10 +34,14 @@ uses
 {$IFDEF MSWINDOWS}
   Windows, PXL.Providers.DX9, PXL.Providers.DX11
 {$ELSE}
-  {$IFDEF SINGLEBOARD}
-    PXL.Providers.GLES
+  {$IFDEF ULTIBO}
+   PXL.Providers.SRT
   {$ELSE}
-    PXL.Providers.GL
+    {$IFDEF SINGLEBOARD}
+      PXL.Providers.GLES
+    {$ELSE}
+      PXL.Providers.GL
+    {$ENDIF}
   {$ENDIF}
 {$ENDIF};
 
@@ -97,11 +101,15 @@ begin
   else
     Result := TDX9Provider.Create(AImageFormatManager);
 {$ELSE}
-  {$IFDEF SINGLEBOARD}
-    Result := TGLESProvider.Create(AImageFormatManager);
+  {$IFDEF ULTIBO}
+    Result := TSRTProvider.Create(AImageFormatManager);
   {$ELSE}
-    Result := TGLProvider.Create(AImageFormatManager);
-  {$ENDIF}
+    {$IFDEF SINGLEBOARD}
+      Result := TGLESProvider.Create(AImageFormatManager);
+    {$ELSE}
+      Result := TGLProvider.Create(AImageFormatManager);
+    {$ENDIF}
+  {$ENDIF}  
 {$ENDIF}
 end;
 

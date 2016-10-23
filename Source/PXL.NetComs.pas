@@ -29,6 +29,10 @@ uses
   {$ENDIF}
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  Winsock2,
+{$ENDIF}
+
 {$IFDEF FPC}
   {$IFDEF UNIX}
     termio, BaseUnix,
@@ -101,6 +105,10 @@ type
 
     class var FSessions: Integer;
 {$IFDEF MSWINDOWS}
+    class var FStringBuf: array[0..511] of AnsiChar;
+    class var FSession: TWSAdata;
+{$ENDIF}
+{$IFDEF ULTIBO}
     class var FStringBuf: array[0..511] of AnsiChar;
     class var FSession: TWSAdata;
 {$ENDIF}
@@ -229,7 +237,11 @@ const
       {$IFDEF MSWINDOWS}
         WSAEWOULDBLOCK
       {$ELSE}
-        EWOULDBLOCK
+        {$IFDEF ULTIBO}
+          WSAEWOULDBLOCK
+        {$ELSE}
+          EWOULDBLOCK
+        {$ENDIF} 
       {$ENDIF}
     {$ENDIF};
 
@@ -267,12 +279,30 @@ begin
   end;
 {$ENDIF}
 
+{$IFDEF ULTIBO}
+  if FSessions <= 0 then
+  begin
+    if WSAStartup($101, FSession) = 0 then
+      Inc(FSessions);
+
+    Exit;
+  end;
+{$ENDIF}
+
   Inc(FSessions);
 end;
 
 procedure TNetCom.DecrementSessions;
 begin
 {$IFDEF MSWINDOWS}
+  if FSessions = 1 then
+  begin
+    WSACleanup;
+    FillChar(FSession, SizeOf(TWSAdata), 0);
+  end;
+{$ENDIF}
+
+{$IFDEF ULTIBO}
   if FSessions = 1 then
   begin
     WSACleanup;
@@ -322,6 +352,15 @@ var
   HostEnt: PHostEnt;
   InAddp: PInAddrs;
 {$ENDIF}
+
+{$IFDEF ULTIBO}
+type
+  PInAddrs = ^TInAddrs;
+  TInAddrs = array [Word] of PInAddr;
+var
+  HostEnt: PHostEnt;
+  InAddp: PInAddrs;
+{$ENDIF}
 begin
   if FSessions <= 0 then
     Exit(DefaultIP);
@@ -338,7 +377,20 @@ begin
   if InAddp[0] <> nil then
     Result := IntToHost(InAddp[0].S_addr);
 {$ELSE}
-  Result := DefaultIP;
+  {$IFDEF ULTIBO}
+    GetHostName(FStringBuf, SizeOf(FStringBuf));
+    
+    HostEnt := GetHostByName(FStringBuf);
+    if HostEnt = nil then
+      Exit;
+    
+    InAddp := Pointer(HostEnt.h_addr_list);
+    
+    if InAddp[0] <> nil then
+      Result := IntToHost(InAddp[0].S_addr);
+  {$ELSE}
+    Result := DefaultIP;
+  {$ENDIF}
 {$ENDIF}
 end;
 
@@ -438,6 +490,10 @@ begin
   {$ELSE}
     Result := ioctlsocket(Handle, FIONBIO, Integer(SocketOption)) = 0;
   {$ENDIF}
+{$ENDIF}
+
+{$IFDEF ULTIBO}
+  Result := ioctlsocket(Handle, Integer(FIONBIO), @SocketOption) = 0;
 {$ENDIF}
 
 {$IFDEF FPC}
@@ -550,10 +606,28 @@ function TNetCom.HostToInt(const Host: StdString): LongWord;
 var
   HostEnt: PHostEnt;
 {$ENDIF}
+
+{$IFDEF ULTIBO}
+var
+  HostEnt: PHostEnt;
+{$ENDIF}
 begin
   Result := IP4AddrToInt(Host);
 
 {$IFDEF MSWINDOWS}
+  if Result = 0 then
+  begin
+    StrPCopy(@FStringBuf, Host);
+
+    HostEnt := GetHostByName(FStringBuf);
+    if HostEnt = nil then
+      Exit;
+
+    Result := PLongWord(HostEnt.h_addr_list^)^;
+  end;
+{$ENDIF}
+
+{$IFDEF ULTIBO}
   if Result = 0 then
   begin
     StrPCopy(@FStringBuf, Host);
@@ -584,6 +658,12 @@ var
   HostEnt: PHostEnt;
   Address: LongWord;
 {$ENDIF}
+
+{$IFDEF ULTIBO}
+var
+  HostEnt: PHostEnt;
+  Address: LongWord;
+{$ENDIF}
 begin
 {$IFDEF MSWINDOWS}
   if FSessions <= 0 then
@@ -597,7 +677,20 @@ begin
   else
     Result := UnknownIP;
 {$ELSE}
-  Result := UnknownIP;
+  {$IFDEF ULTIBO}
+    if FSessions <= 0 then
+      Exit(UnknownIP);
+    
+    Address := HostToInt(IPAddress);
+    HostEnt := GetHostByAddr(@Address, 4, AF_INET);
+    
+    if HostEnt <> nil then
+      Result := StdString(HostEnt.h_name)
+    else
+      Result := UnknownIP;
+  {$ELSE}
+    Result := UnknownIP;
+  {$ENDIF}  
 {$ENDIF}
 end;
 

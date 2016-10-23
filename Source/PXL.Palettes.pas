@@ -22,7 +22,7 @@ type
   TFloatNodeType = (Plain, Sine, Accel, Brake);
 
   PFloatColorNode = ^TFloatColorNode;
-  TFloatColorNode = packed record
+  TFloatColorNode = {$IFDEF ULTIBO}record{$ELSE}packed record{$ENDIF}
     Color: TFloatColor;
     NodeType: TFloatNodeType;
     Theta: VectorFloat;

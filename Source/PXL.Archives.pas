@@ -389,7 +389,11 @@ begin
 {$IFDEF MSWINDOWS}
   Result := StringReplace(NewFileName, '/', '\', [rfReplaceAll, rfIgnoreCase]);
 {$ELSE}
-  Result := StringReplace(NewFileName, '\', '/', [rfReplaceAll, rfIgnoreCase]);
+  {$IFDEF ULTIBO}
+    Result := StringReplace(NewFileName, '/', '\', [rfReplaceAll, rfIgnoreCase]);
+  {$ELSE}
+    Result := StringReplace(NewFileName, '\', '/', [rfReplaceAll, rfIgnoreCase]);
+  {$ENDIF}
 {$ENDIF}
 end;
 
