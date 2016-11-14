@@ -78,8 +78,7 @@ constructor TApplication.Create;
 begin
   FSystemCore := TUltiboSystemCore.Create;
   FGPIO := TUltiboGPIO.Create(FSystemCore);
-  //FDataPort := TUltiboSPI.Create(nil, 0, 32000000, 0); //To Do //Fails to initialize display at 32MHz (the Ultibo HX8357 driver works at that speed)
-  FDataPort := TUltiboSPI.Create;
+  FDataPort := TUltiboSPI.Create(nil, 0, 32000000, 0);
 
   FDisplay := TDisplay.Create(FGPIO, FDataPort, PinDC, PinRST);
 
