@@ -306,12 +306,12 @@ begin
 
   EngineFonts[FontTahoma].DrawText(
     Point2(4.0, 4.0),
-    'FPS: ' + IntToStr(EngineTimer.FrameRate),
+    'FPS: ' + UnicodeString(IntToStr(EngineTimer.FrameRate)),
     IntColor2($FFFFE887, $FFFF0000));
 
   EngineFonts[FontTahoma].DrawText(
     Point2(4.0, 24.0),
-    'Technology: ' + GetFullDeviceTechString(EngineDevice),
+    'Technology: ' + UnicodeString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFE8FFAA, $FF12C312));
 end;
   

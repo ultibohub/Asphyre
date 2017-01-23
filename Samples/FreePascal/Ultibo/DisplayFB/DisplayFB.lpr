@@ -160,7 +160,7 @@ begin
     
     FDisplay.Fonts[FFontConsolas].DrawText(
       Point2(1.0, FDisplaySize.Y - 14.0),
-      'Frame #: ' + IntToStr(Ticks),
+      'Frame #: ' + UnicodeString(IntToStr(Ticks)),
       IntColor2($FFD6F5FC, $FF3E0DDC));
     
     // Send picture to the display.

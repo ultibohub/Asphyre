@@ -315,12 +315,12 @@ begin
 
   EngineFonts[FontKristen].DrawText(
     Point2(4.0, 4.0),
-    'FPS: ' + IntToStr(EngineTimer.FrameRate) + ', Cache Stall: ' + IntToStr(CacheStall),
+    'FPS: ' + UnicodeString(IntToStr(EngineTimer.FrameRate)) + ', Cache Stall: ' + UnicodeString(IntToStr(CacheStall)),
     IntColor2($FFFFFF62, $FFFF8424), 1.0);
 
   EngineFonts[FontKristen].DrawText(
     Point2(4.0, 34.0),
-    'Technology: ' + GetFullDeviceTechString(EngineDevice),
+    'Technology: ' + UnicodeString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFE8FFAA, $FF12C312));
 
   EngineCanvas.Flush;

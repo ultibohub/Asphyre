@@ -404,7 +404,7 @@ begin
 
   EngineFonts[FontTranceForm].DrawText(
     Point2(4.0, 4.0),
-    'fps: ' + IntToStr(EngineTimer.FrameRate),
+    'fps: ' + UnicodeString(IntToStr(EngineTimer.FrameRate)),
     IntColor2($FFD1FF46, $FF3EB243));
 end;
  
