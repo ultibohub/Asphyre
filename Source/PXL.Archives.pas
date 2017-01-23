@@ -62,7 +62,6 @@ type
       FExtraSize: Integer;
       FExtraField: Pointer;
     protected
-
       procedure Reset;
       procedure CopyFrom(const Source: TRecordEntry);
 
@@ -1525,7 +1524,7 @@ end;
 
 function TArchive.SearchListCompare(const Value1, Value2: Integer): Integer;
 begin
-  Result := CompareText(EntryList[Value1].Key, EntryList[Value2].Key);
+  Result := CompareText(AnsiString(EntryList[Value1].Key), AnsiString(EntryList[Value2].Key));
 end;
 
 function TArchive.SearchListSplit(const Start, Stop: Integer): Integer;
@@ -1594,7 +1593,7 @@ begin
   while Lo <= Hi do
   begin
     Mid := (Lo + Hi) div 2;
-    Res := CompareText(EntryList[SearchList[Mid]].Key, Key);
+    Res := CompareText(AnsiString(EntryList[SearchList[Mid]].Key), AnsiString(Key));
 
     if Res = 0 then
     begin

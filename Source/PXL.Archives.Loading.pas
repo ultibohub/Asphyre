@@ -412,7 +412,7 @@ begin
       Stream.Position := 0;
 
       Image := TAtlasImage.Create(Images.Device, False);
-      Image.Name := ChangeFileExt(ExtractFileName(Key), '');
+      Image.Name := ChangeFileExt(RawByteString(ExtractFileName(Key)), '');
       Image.MipMapping := MipMapping;
       Image.PixelFormat := PixelFormat;
 
@@ -428,7 +428,7 @@ begin
         end
       else
         // The entry is just an embedded file.
-        Success := Image.LoadFromStream(ExtractFileExt(Key), Stream);
+        Success := Image.LoadFromStream(UTF8String(ExtractFileExt(Key)), Stream);
 
       if Success then
         Result := Images.Insert(Image)
@@ -558,22 +558,22 @@ begin
     try
       Stream.Position := 0;
 
-      FontName := ChangeFileExt(Key, '');
+      FontName := ChangeFileExt(RawByteString(Key), '');
 
       if Archive.Entries[EntryIndex].EntryType <> TArchive.TEntryType.Font then
       begin
-        Extension := ExtractFileExt(Key);
+        Extension := ExtractFileExt(UTF8String(Key));
 
         if not SameText(Extension, TBitmapFont.DefaultBinaryExtension) then
         begin
           if SameText(Extension, TBitmapFont.DefaultXMLExtension) then
           begin // XML file
-            SepEntry := ChangeFileExt(Key, RawImageExtension);
+            SepEntry := UnicodeString(ChangeFileExt(RawByteString(Key), RawImageExtension));
             SepEntryIndex := Archive.IndexOf(SepEntry);
 
             if SepEntryIndex = -1 then
             begin
-              SepEntry := ChangeFileExt(Key, TBitmapFont.DefaultImageExtension);
+              SepEntry := UnicodeString(ChangeFileExt(RawByteString(Key), RawByteString(TBitmapFont.DefaultImageExtension)));
               SepEntryIndex := Archive.IndexOf(SepEntry);
 
               if SepEntryIndex = -1 then
@@ -593,7 +593,7 @@ begin
           end
           else
           begin // Image file
-            SepEntry := ChangeFileExt(Key, TBitmapFont.DefaultXMLExtension);
+            SepEntry := UnicodeString(ChangeFileExt(RawByteString(Key), RawByteString(TBitmapFont.DefaultXMLExtension)));
 
             SepEntryIndex := Archive.IndexOf(SepEntry);
             if SepEntryIndex = -1 then
