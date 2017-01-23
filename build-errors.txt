@@ -49,4 +49,3 @@ PXL.Surfaces.FB.Ultibo.pas(180,13) Warning: Conversion between ordinals and poin
 PXL.Surfaces.pas(1135,22) Warning: Conversion between ordinals and pointers is not portable
 PXL.Textures.pas(361,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Textures.pas(366,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
-PXL.XML.pas(974,13) Note: Local variable "TextContent" not used
