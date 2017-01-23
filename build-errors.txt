@@ -41,7 +41,6 @@ PXL.Canvas.SRT.pas(269,23) Warning: Converting pointers to signed integers may r
 PXL.Canvas.SRT.pas(270,23) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Devices.SRT.pas(232,3) Note: Local variable "SwapChainInfo" not used
 PXL.Displays.FB.Ultibo.pas(130,14) Warning: Conversion between ordinals and pointers is not portable
-PXL.Displays.HX8357.pas(152,29) Note: Local variable "BytesTotal" is assigned but never used
 PXL.Displays.Types.pas(214,17) Note: Private type "TCustomDrivenDualDisplay.TI2CBlock" never used
 PXL.ImageFormats.FCL.pas(138,33) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.ImageFormats.FCL.pas(81,35) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
