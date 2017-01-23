@@ -13,7 +13,6 @@ PXL.Archives.pas(1528,46) Warning: Implicit string type conversion with potentia
 PXL.Archives.pas(1528,69) Warning: Implicit string type conversion with potential data loss from "UnicodeString" to "AnsiString"
 PXL.Archives.pas(1597,54) Warning: Implicit string type conversion with potential data loss from "UnicodeString" to "AnsiString"
 PXL.Archives.pas(1597,59) Warning: Implicit string type conversion with potential data loss from "UnicodeString" to "AnsiString"
-PXL.Archives.pas(65,7) Warning: Constructor should be public
 PXL.Canvas.SRT.pas(208,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Canvas.SRT.pas(209,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Canvas.SRT.pas(213,24) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.

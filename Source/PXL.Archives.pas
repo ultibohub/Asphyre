@@ -62,7 +62,6 @@ type
       FExtraSize: Integer;
       FExtraField: Pointer;
     protected
-      constructor CreateClone(const Source: TRecordEntry);
 
       procedure Reset;
       procedure CopyFrom(const Source: TRecordEntry);
@@ -70,6 +69,7 @@ type
       property Offset: Cardinal read FOffset;
       property InitVector: UInt64 read FInitVector;
     public
+      constructor CreateClone(const Source: TRecordEntry);
       property Key: UniString read FKey;
       property EntryType: TEntryType read FEntryType;
       property OriginalSize: Cardinal read FOriginalSize;
