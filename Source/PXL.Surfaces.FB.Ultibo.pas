@@ -177,7 +177,7 @@ begin
   
   // Get skip and buffer
   Skip := FWidth - Width;
-  Buffer := Pointer(PtrUInt(FBits) + (SrcAt.Y * FPitch) + (SrcAt.X * FBytesPerPixel));
+  Buffer := FBits + (SrcAt.Y * FPitch) + (SrcAt.X * FBytesPerPixel);
 
   // Get framebuffer format
   Format := FramebufferDeviceGetFormat(FramebufferDevice);

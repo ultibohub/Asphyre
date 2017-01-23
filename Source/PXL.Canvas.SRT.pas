@@ -205,18 +205,18 @@ begin
     Exit;
 
   Index1 := Indices;
-  Index2 := Pointer(PtrInt(Indices) + SizeOf(LongInt));
-  Index3 := Pointer(PtrInt(Indices) + 2 * SizeOf(LongInt));
+  Index2 := Indices + SizeOf(LongInt);
+  Index3 := Indices + 2 * SizeOf(LongInt);
 
   for I := 0 to TriangleCount - 1 do
   begin
-    Vertex1 := Pointer(PtrInt(Vertices) + Index1^ * SizeOf(TPoint2));
-    Vertex2 := Pointer(PtrInt(Vertices) + Index2^ * SizeOf(TPoint2));
-    Vertex3 := Pointer(PtrInt(Vertices) + Index3^ * SizeOf(TPoint2));
+    Vertex1 := Pointer(Vertices) + Index1^ * SizeOf(TPoint2);
+    Vertex2 := Pointer(Vertices) + Index2^ * SizeOf(TPoint2);
+    Vertex3 := Pointer(Vertices) + Index3^ * SizeOf(TPoint2);
 
-    Color1 := Pointer(PtrInt(Colors) + Index1^ * SizeOf(TIntColor));
-    Color2 := Pointer(PtrInt(Colors) + Index2^ * SizeOf(TIntColor));
-    Color3 := Pointer(PtrInt(Colors) + Index3^ * SizeOf(TIntColor));
+    Color1 := Pointer(Colors) + Index1^ * SizeOf(TIntColor);
+    Color2 := Pointer(Colors) + Index2^ * SizeOf(TIntColor);
+    Color3 := Pointer(Colors) + Index3^ * SizeOf(TIntColor);
 
     Det := (Vertex1.X - Vertex3.X) * (Vertex2.Y - Vertex3.Y) - (Vertex2.X - Vertex3.X) * (Vertex1.Y - Vertex3.Y);
     if Det > 0 then
@@ -226,9 +226,9 @@ begin
       DrawTriangle(FSurface, nil, Vertex1^, Vertex2^, Vertex3^, ZeroPoint2, ZeroPoint2, ZeroPoint2, Color1^, Color2^,
         Color3^, FClipRect, BlendingEffect = TBlendingEffect.Add);
 
-    Index1 := Pointer(PtrInt(Index1) + 3 * SizeOf(LongInt));
-    Index2 := Pointer(PtrInt(Index2) + 3 * SizeOf(LongInt));
-    Index3 := Pointer(PtrInt(Index3) + 3 * SizeOf(LongInt));
+    Index1 := Index1 + 3 * SizeOf(LongInt);
+    Index2 := Index2 + 3 * SizeOf(LongInt);
+    Index3 := Index3 + 3 * SizeOf(LongInt);
   end;
 end;
 
@@ -245,29 +245,29 @@ begin
     Exit;
 
   Index1 := Indices;
-  Index2 := Pointer(PtrInt(Indices) + SizeOf(LongInt));
-  Index3 := Pointer(PtrInt(Indices) + 2 * SizeOf(LongInt));
+  Index2 := Indices + SizeOf(LongInt);
+  Index3 := Indices + 2 * SizeOf(LongInt);
 
   for I := 0 to TriangleCount - 1 do
   begin
-    Vertex1 := Pointer(PtrInt(Vertices) + Index1^ * SizeOf(TPoint2));
-    Vertex2 := Pointer(PtrInt(Vertices) + Index2^ * SizeOf(TPoint2));
-    Vertex3 := Pointer(PtrInt(Vertices) + Index3^ * SizeOf(TPoint2));
+    Vertex1 := Pointer(Vertices) + Index1^ * SizeOf(TPoint2);
+    Vertex2 := Pointer(Vertices) + Index2^ * SizeOf(TPoint2);
+    Vertex3 := Pointer(Vertices) + Index3^ * SizeOf(TPoint2);
 
-    TexCoord1 := Pointer(PtrInt(TexCoords) + Index1^ * SizeOf(TPoint2));
-    TexCoord2 := Pointer(PtrInt(TexCoords) + Index2^ * SizeOf(TPoint2));
-    TexCoord3 := Pointer(PtrInt(TexCoords) + Index3^ * SizeOf(TPoint2));
+    TexCoord1 := Pointer(TexCoords) + Index1^ * SizeOf(TPoint2);
+    TexCoord2 := Pointer(TexCoords) + Index2^ * SizeOf(TPoint2);
+    TexCoord3 := Pointer(TexCoords) + Index3^ * SizeOf(TPoint2);
 
-    Color1 := Pointer(PtrInt(Colors) + Index1^ * SizeOf(TIntColor));
-    Color2 := Pointer(PtrInt(Colors) + Index2^ * SizeOf(TIntColor));
-    Color3 := Pointer(PtrInt(Colors) + Index3^ * SizeOf(TIntColor));
+    Color1 := Pointer(Colors) + Index1^ * SizeOf(TIntColor);
+    Color2 := Pointer(Colors) + Index2^ * SizeOf(TIntColor);
+    Color3 := Pointer(Colors) + Index3^ * SizeOf(TIntColor);
 
     DrawTriangle(FSurface, TSRTLockableTexture(Texture).Surface, Vertex3^, Vertex2^, Vertex1^, TexCoord3^, TexCoord2^,
       TexCoord1^, Color3^, Color2^, Color1^, FClipRect, BlendingEffect = TBlendingEffect.Add);
 
-    Index1 := Pointer(PtrInt(Index1) + 3 * SizeOf(LongInt));
-    Index2 := Pointer(PtrInt(Index2) + 3 * SizeOf(LongInt));
-    Index3 := Pointer(PtrInt(Index3) + 3 * SizeOf(LongInt));
+    Index1 := Index1 + 3 * SizeOf(LongInt);
+    Index2 := Index2 + 3 * SizeOf(LongInt);
+    Index3 := Index3 + 3 * SizeOf(LongInt);
   end;
 end;
 

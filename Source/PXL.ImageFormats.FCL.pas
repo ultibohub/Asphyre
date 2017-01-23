@@ -78,7 +78,7 @@ var
 begin
   Image := TFPMemoryImage.Create(InitialMemoryImageSize.X, InitialMemoryImageSize.Y);
   try
-    Reader := ContextImageReaders[PtrInt(Context)].Create;
+    Reader := ContextImageReaders[PtrUInt(Context)].Create;
     if Reader = nil then
       Exit(False);
     try
@@ -135,7 +135,7 @@ begin
   if SourceSurface.PremultipliedAlpha or (SourceSurface.PixelFormat <> TPixelFormat.A8R8G8B8) then
     Exit(False);
 
-  Writer := ContextImageWriters[PtrInt(Context)].Create;
+  Writer := ContextImageWriters[PtrUInt(Context)].Create;
   if Writer = nil then
     Exit(False);
   try

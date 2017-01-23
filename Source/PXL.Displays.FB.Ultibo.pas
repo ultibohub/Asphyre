@@ -127,7 +127,7 @@ begin
   Width := Rect.Right - Rect.Left;
   Height := Rect.Bottom - Rect.Top;
   Skip := FPhysicalSize.X - Width;
-  Address := Pointer(PtrUInt(FScreenBuffer) + (Rect.Top * FPhysicalSize.X + Rect.Left) * FScreenBufferBytes);
+  Address := FScreenBuffer + (Rect.Top * FPhysicalSize.X + Rect.Left) * FScreenBufferBytes;
   
   FramebufferDevicePutRect(FFramebuffer, Rect.Left, Rect.Top, Address, Width, Height, Skip, FRAMEBUFFER_TRANSFER_DMA);
 end;
