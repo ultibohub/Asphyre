@@ -210,11 +210,6 @@ type
     { I2C codes that differentiate command and data values. }
     DisplayCommandID = $00;
     DisplayDataID = $40;
-  private type
-    TI2CBlock = packed record
-      Control: Byte;
-      Data: Byte;
-    end;
   protected
     FAddress: Integer;
 
