@@ -39,7 +39,6 @@ PXL.Canvas.SRT.pas(263,23) Warning: Converting pointers to signed integers may r
 PXL.Canvas.SRT.pas(268,23) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Canvas.SRT.pas(269,23) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Canvas.SRT.pas(270,23) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
-PXL.Devices.SRT.pas(232,3) Note: Local variable "SwapChainInfo" not used
 PXL.Displays.FB.Ultibo.pas(130,14) Warning: Conversion between ordinals and pointers is not portable
 PXL.ImageFormats.FCL.pas(138,33) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.ImageFormats.FCL.pas(81,35) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
@@ -51,7 +50,4 @@ PXL.Surfaces.FB.Ultibo.pas(180,13) Warning: Conversion between ordinals and poin
 PXL.Surfaces.pas(1135,22) Warning: Conversion between ordinals and pointers is not portable
 PXL.Textures.pas(361,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
 PXL.Textures.pas(366,21) Warning: Converting pointers to signed integers may result in wrong comparison results and range errors, use an unsigned type instead.
-PXL.Timing.pas(236,3) Note: Local variable "Value" not used
-PXL.Timing.pas(294,3) Note: Local variable "Value" not used
-PXL.Timing.pas(352,3) Note: Local variable "Value" not used
 PXL.XML.pas(974,13) Note: Local variable "TextContent" not used
