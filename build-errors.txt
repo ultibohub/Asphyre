@@ -1,1 +1,0 @@
-PXL.Archives.pas(1412,35) Warning: Local variable "NewEntries" of a managed type does not seem to be initialized

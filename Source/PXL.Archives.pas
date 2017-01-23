@@ -1409,12 +1409,12 @@ begin
       OutStream.PutByte(Ord('L'));
       OutStream.PutByte(Ord('0'));
       // --> Record Count
+      SetLength(NewEntries, Length(EntryList) - 1);
       OutStream.PutLongInt(Length(NewEntries) - 1);
       // --> Table Offset
       OutStream.PutLongWord(ArchiveHeaderSize);
 
       // Copy records from the source archive to destination, without modifying their contents.
-      SetLength(NewEntries, Length(EntryList) - 1);
 
       for I := 0 to Length(NewEntries) - 1 do
         NewEntries[I] := nil;
