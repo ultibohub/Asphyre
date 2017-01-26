@@ -421,12 +421,12 @@ begin
   // Show current status.
   EngineFonts[FontVerdana].DrawText(
     Point2(DrawAt.X + 2, DrawAt.Y),
-    'Frame Rate: ' + IntToStr(EngineTimer.FrameRate) + ', Particle Count: ' + IntToStr(EngineParticles.ComputeTotalNodeCount),
+    'Frame Rate: ' + UnicodeString(IntToStr(EngineTimer.FrameRate)) + ', Particle Count: ' + UnicodeString(IntToStr(EngineParticles.ComputeTotalNodeCount)),
     IntColor2($FF00FF00, $FFFFFFFF));
 
   EngineFonts[FontVerdana].DrawText(
     Point2(DrawAt.X + 2, DrawAt.Y + 14),
-    'Technology: ' + GetFullDeviceTechString(EngineDevice),
+    'Technology: ' + UnicodeString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFFF00FF, $FFFFFFFF));
 end;
   

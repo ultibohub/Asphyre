@@ -358,12 +358,12 @@ uses
 
 function TLockedPixels.GetScanline(const Index: Integer): Pointer;
 begin
-  Result := Pointer(PtrInt(Bits) + Index * Pitch);
+  Result := Bits + Index * Pitch;
 end;
 
 function TLockedPixels.GetPixelPtr(const X, Y: Integer): Pointer;
 begin
-  Result := Pointer(PtrInt(Bits) + Y * Pitch + X * BytesPerPixel);
+  Result := Bits + Y * Pitch + X * BytesPerPixel;
 end;
 
 function TLockedPixels.GetValid: Boolean;
