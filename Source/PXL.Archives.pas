@@ -62,14 +62,14 @@ type
       FExtraSize: Integer;
       FExtraField: Pointer;
     protected
-      constructor CreateClone(const Source: TRecordEntry);
-
       procedure Reset;
       procedure CopyFrom(const Source: TRecordEntry);
 
       property Offset: Cardinal read FOffset;
       property InitVector: UInt64 read FInitVector;
     public
+      constructor CreateClone(const Source: TRecordEntry);
+
       property Key: UniString read FKey;
       property EntryType: TEntryType read FEntryType;
       property OriginalSize: Cardinal read FOriginalSize;
@@ -1410,7 +1410,7 @@ begin
       OutStream.PutByte(Ord('L'));
       OutStream.PutByte(Ord('0'));
       // --> Record Count
-      OutStream.PutLongInt(Length(NewEntries) - 1);
+      OutStream.PutLongInt(Length(EntryList) - 1);
       // --> Table Offset
       OutStream.PutLongWord(ArchiveHeaderSize);
 
@@ -1525,7 +1525,7 @@ end;
 
 function TArchive.SearchListCompare(const Value1, Value2: Integer): Integer;
 begin
-  Result := CompareText(EntryList[Value1].Key, EntryList[Value2].Key);
+  Result := CompareText(StdString(EntryList[Value1].Key), StdString(EntryList[Value2].Key));
 end;
 
 function TArchive.SearchListSplit(const Start, Stop: Integer): Integer;
@@ -1594,7 +1594,7 @@ begin
   while Lo <= Hi do
   begin
     Mid := (Lo + Hi) div 2;
-    Res := CompareText(EntryList[SearchList[Mid]].Key, Key);
+    Res := CompareText(StdString(EntryList[SearchList[Mid]].Key), StdString(Key));
 
     if Res = 0 then
     begin

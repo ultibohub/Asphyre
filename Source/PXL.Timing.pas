@@ -227,20 +227,18 @@ end;
 {$ENDIF}
 
 function GetSystemTimerValue: TSystemTimerValue;
-var
 {$IFDEF MSWINDOWS}
+var
   PerformanceCounter: Int64;
 {$ENDIF}
 
-{$IFDEF ULTIBO}
-  Value: Int64;
-{$ENDIF}  
-
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
+var
   Value: TimeVal;
 {$ENDIF}
 
 {$IFNDEF NATIVE_TIMING_SUPPORT}
+var
   CurTime: TDateTime;
 {$ENDIF}
 begin
@@ -285,20 +283,18 @@ begin
 end;
 
 function GetSystemTickCount: Cardinal;
-var
 {$IFDEF MSWINDOWS}
+var
   PerformanceCounter: Int64;
 {$ENDIF}
 
-{$IFDEF ULTIBO}
-  Value: Int64;
-{$ENDIF}  
-
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
+var
   Value: TimeVal;
 {$ENDIF}
 
 {$IFNDEF NATIVE_TIMING_SUPPORT}
+var
   CurTime: TDateTime;
 {$ENDIF}
 begin
@@ -343,20 +339,18 @@ begin
 end;
 
 function GetSystemTimeValue: Double;
-var
 {$IFDEF MSWINDOWS}
+var
   PerformanceCounter: Int64;
 {$ENDIF}
 
-{$IFDEF ULTIBO}
-  Value: Int64;
-{$ENDIF}  
-
 {$IF (DEFINED(FPC) AND DEFINED(UNIX)) OR DEFINED(POSIX)}
+var
   Value: TimeVal;
 {$ENDIF}
 
 {$IFNDEF NATIVE_TIMING_SUPPORT}
+var
   CurTime: TDateTime;
 {$ENDIF}
 begin

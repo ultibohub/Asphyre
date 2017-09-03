@@ -354,7 +354,7 @@ procedure TFloatPalette.SaveToStream(const Stream: TStream);
 var
   I: Integer;
 begin
-  Stream.PutShortString(FName);
+  Stream.PutShortString(UniString(FName));
   Stream.PutDouble(FTime);
   Stream.PutLongInt(Length(FData));
 
@@ -373,7 +373,7 @@ procedure TFloatPalette.LoadFromStream(const Stream: TStream);
 var
   I, ElemCount: Integer;
 begin
-  FName := Stream.GetShortString;
+  FName := StdString(Stream.GetShortString);
   FTime := Stream.GetDouble;
   ElemCount := Stream.GetLongInt;
 
@@ -665,7 +665,7 @@ procedure TFloatPalettes.SaveToStream(const Stream: TStream);
 var
   I: Integer;
 begin
-  Stream.PutShortString(FTitle);
+  Stream.PutShortString(UniString(FTitle));
   Stream.PutLongInt(Length(FData));
 
   for I := 0 to Length(FData) - 1 do
@@ -676,7 +676,7 @@ procedure TFloatPalettes.LoadFromStream(const Stream: TStream);
 var
   I, ElemCount: Integer;
 begin
-  FTitle := Stream.GetShortString;
+  FTitle := StdString(Stream.GetShortString);
   ElemCount := Stream.GetLongInt;
 
   Clear;

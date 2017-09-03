@@ -17,9 +17,9 @@ program Blinky;
 
   Make sure to connect the LED to RPi physical pin #16 (GPIO pin 23), please take a look at the accompanying diagram and photo.
   
-  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 2.
+  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
-  To convert ths example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
+  To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
 }

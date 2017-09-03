@@ -149,11 +149,12 @@ end;
 
 procedure TDisplay.PresentBuffer(const Rect: TIntRect);
 var
-  I, StartPos, BytesToCopy, BytesTotal: Integer;
+  I, StartPos, BytesToCopy: Integer;
+  //BytesTotal: Integer;
 begin
   SetWriteWindow(Rect);
 
-  BytesTotal := Rect.Width * Rect.Height * SizeOf(TScreenColor);
+  //BytesTotal := Rect.Width * Rect.Height * SizeOf(TScreenColor);
   StartPos := (Rect.Top * FPhysicalSize.X + Rect.Left) * SizeOf(TScreenColor);
 
   if (Rect.Left = 0) and (Rect.Top = 0) and (Rect.Right = FPhysicalSize.X) and (Rect.Bottom = FPhysicalSize.Y) then

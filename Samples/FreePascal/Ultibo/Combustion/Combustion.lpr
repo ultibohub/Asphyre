@@ -20,9 +20,9 @@ program Combustion;
    1. Remember to copy accompanying files "media.vtdb" and "Tahoma9b.font" from the 
       folder \Samples\Media to your SD card as well.
   
-  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 2.
+  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
-  To convert ths example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
+  To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
 }
@@ -47,6 +47,7 @@ uses
   Console, 
   Classes,
   SysUtils,
+  PXL.TypeDef,
   PXL.Types,
   PXL.Timing,
   PXL.Devices,
@@ -421,12 +422,12 @@ begin
   // Show current status.
   EngineFonts[FontVerdana].DrawText(
     Point2(DrawAt.X + 2, DrawAt.Y),
-    'Frame Rate: ' + IntToStr(EngineTimer.FrameRate) + ', Particle Count: ' + IntToStr(EngineParticles.ComputeTotalNodeCount),
+    'Frame Rate: ' + UniString(IntToStr(EngineTimer.FrameRate)) + ', Particle Count: ' + UniString(IntToStr(EngineParticles.ComputeTotalNodeCount)),
     IntColor2($FF00FF00, $FFFFFFFF));
 
   EngineFonts[FontVerdana].DrawText(
     Point2(DrawAt.X + 2, DrawAt.Y + 14),
-    'Technology: ' + GetFullDeviceTechString(EngineDevice),
+    'Technology: ' + UniString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFFF00FF, $FFFFFFFF));
 end;
   

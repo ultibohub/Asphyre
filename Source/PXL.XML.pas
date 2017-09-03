@@ -971,7 +971,8 @@ end;
 
 function ParseXMLNode(const Root: TXMLNode; const Text: StdString; var TextPos: Integer): TXMLNode;
 var
-  NodeName, TextContent: StdString;
+  NodeName: StdString;
+  //TextContent: StdString;
   TextBlockStart, TextBlockEnd: Integer;
 begin
   // Process node name.

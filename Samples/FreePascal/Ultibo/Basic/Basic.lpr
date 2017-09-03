@@ -20,9 +20,9 @@ program Basic;
    1. Remember to copy accompanying files "Tahoma9b.font" and "Lenna.png" from the 
       folder \Samples\Media to your SD card as well.
   
-  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 2.
+  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
-  To convert ths example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
+  To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
 }
@@ -306,12 +306,12 @@ begin
 
   EngineFonts[FontTahoma].DrawText(
     Point2(4.0, 4.0),
-    'FPS: ' + IntToStr(EngineTimer.FrameRate),
+    'FPS: ' + UniString(IntToStr(EngineTimer.FrameRate)),
     IntColor2($FFFFE887, $FFFF0000));
 
   EngineFonts[FontTahoma].DrawText(
     Point2(4.0, 24.0),
-    'Technology: ' + GetFullDeviceTechString(EngineDevice),
+    'Technology: ' + UniString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFE8FFAA, $FF12C312));
 end;
   

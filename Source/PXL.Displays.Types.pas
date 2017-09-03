@@ -211,10 +211,10 @@ type
     DisplayCommandID = $00;
     DisplayDataID = $40;
   private type
-    TI2CBlock = packed record
-      Control: Byte;
-      Data: Byte;
-    end;
+    //TI2CBlock = packed record
+    //  Control: Byte;
+    //  Data: Byte;
+    //end;
   protected
     FAddress: Integer;
 

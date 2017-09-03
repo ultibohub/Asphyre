@@ -24,9 +24,9 @@ program DisplaySPI;
 
    3. Check the accompanying diagram and photo to see an example on how this can be connected on Raspberry PI.
    
-  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 2.
+  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
-  To convert ths example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
+  To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
 }
@@ -177,7 +177,7 @@ begin
 
     FDisplay.Fonts[FFontConsolas].DrawText(
       Point2(1.0, FDisplaySize.Y - 14.0),
-      'Frame #: ' + IntToStr(Ticks),
+      'Frame #: ' + UniString(IntToStr(Ticks)),
       IntColor2($FFD6F5FC, $FF3E0DDC));
 
     // Send picture to the display.

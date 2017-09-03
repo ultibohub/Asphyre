@@ -1132,7 +1132,7 @@ begin
       Move(GetScanline(J)^, CopyBits^, CopyWidth);
 
       DestPixel := CopyBits;
-      SourcePixel := Pointer((PtrUInt(GetScanline(J)) + CopyWidth) - FBytesPerPixel);
+      SourcePixel := Pointer(PtrUInt((PtrUInt(GetScanline(J)) + CopyWidth) - FBytesPerPixel));
 
       for I := 0 to FWidth - 1 do
       begin

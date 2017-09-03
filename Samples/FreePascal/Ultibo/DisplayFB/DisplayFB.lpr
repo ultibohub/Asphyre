@@ -20,9 +20,9 @@ program DisplayFB;
    1. Remember to copy accompanying files "corbel.font", "consolas.font" and "lenna.png" from the 
       folder \Samples\FreePascal\Ultibo\Media to your SD card as well.
   
-  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 2.
+  The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
-  To convert ths example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
+  To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
 }
@@ -160,7 +160,7 @@ begin
     
     FDisplay.Fonts[FFontConsolas].DrawText(
       Point2(1.0, FDisplaySize.Y - 14.0),
-      'Frame #: ' + IntToStr(Ticks),
+      'Frame #: ' + UniString(IntToStr(Ticks)),
       IntColor2($FFD6F5FC, $FF3E0DDC));
     
     // Send picture to the display.
