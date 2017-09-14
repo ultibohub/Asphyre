@@ -1,9 +1,9 @@
-program Basic;
+program ShapesGLES;
 {
   This file is part of Asphyre Framework, also known as Platform eXtended Library (PXL).
   Copyright (c) 2000 - 2016  Yuriy Kotsarenko
   Ultibo port Copyright (c) 2016 Garry Wood <garry@softoz.com.au>
-  
+
   The contents of this file are subject to the Mozilla Public License Version 2.0 (the "License");
   you may not use this file except in compliance with the License. You may obtain a copy of the
   License at http://www.mozilla.org/MPL/
@@ -13,12 +13,12 @@ program Basic;
   limitations under the License.
 }
 {
-  This example was adapted for Ultibo from the FreePascal desktop example Basic.
+  This example was adapted for Ultibo from the FreePascal desktop example Shapes.
   
   Attention! Please follow these instructions before running the sample:
   
-   1. Remember to copy accompanying files "Tahoma9b.font" and "Lenna.png" from the 
-      folder \Samples\Media to your SD card as well.
+   1. Remember to copy accompanying files "Kristen.font" from the folder \Samples\Media to
+      your SD card as well.
   
   The example has been created for a Raspberry Pi 2 but will also run on a Raspberry Pi 3.
   
@@ -26,13 +26,14 @@ program Basic;
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
   
-  This version of the example uses software redenering and will work on any supported platform.
+  This version of the example uses OpenGL ES and will only work on platforms where OpenGL ES
+  is supported.
 }
 
 {$mode delphi}{$H+}
 
 uses
-  RaspberryPi2,
+  RaspberryPi2, 
   GlobalConst,
   Threads,
   Framebuffer,
@@ -43,17 +44,16 @@ uses
   PXL.Types,
   PXL.Timing,
   PXL.Devices,
-  PXL.ImageFormats,
   PXL.Canvas,
   PXL.SwapChains,
-  PXL.Images,
   PXL.Fonts,
   PXL.Providers,
   
   PXL.Classes,
-  PXL.Providers.Auto,
-  PXL.ImageFormats.Auto;
+  PXL.Providers.GLES, {Include the GLES provider instead of the Auto provider}
   
+  VC4;                {Include the VC4 unit to enable OpenGL ES support}
+
 type
   TMainForm = class(TObject)
     function FormCreate(Sender: TObject): Boolean;
@@ -61,29 +61,29 @@ type
   private
     Name: String;
     Handle: THandle;
+    
+    WindowX: Integer;
+    WindowY: Integer;
+    
     ClientWidth: Integer;
     ClientHeight: Integer;
-  
-    { private declarations }
-    ImageFormatManager: TImageFormatManager;
-    ImageFormatHandler: TCustomImageFormatHandler;
 
+    { private declarations }
     DeviceProvider: TGraphicsDeviceProvider;
 
     EngineDevice: TCustomSwapChainDevice;
     EngineCanvas: TCustomCanvas;
-    EngineImages: TAtlasImages;
     EngineFonts: TBitmapFonts;
     EngineTimer: TMultimediaTimer;
 
     DisplaySize: TPoint2px;
     EngineTicks: Integer;
+    CacheStall: Integer;
 
-    ImageLenna: Integer;
-    FontTahoma: Integer;
+    FontKristen: Integer;
 
     procedure ApplicationIdle(Sender: TObject);
-    
+
     procedure EngineTiming(const Sender: TObject);
     procedure EngineProcess(const Sender: TObject);
 
@@ -92,11 +92,13 @@ type
   public
     { public declarations }
   end;
-  
+
 var
   MainForm: TMainForm;
-  
+
 function TMainForm.FormCreate(Sender: TObject): Boolean;  
+const
+  DefaultMultisamples = 8;
 var
   FramebufferDevice: PFramebufferDevice = nil;
   FramebufferProperties: TFramebufferProperties;
@@ -129,19 +131,24 @@ begin
   
   Handle := THandle(FramebufferDevice);
   ClientWidth := FramebufferProperties.PhysicalWidth;
-  if ClientWidth > 640 then ClientWidth := 640;
+  if ClientWidth > 1280 then ClientWidth := 1280;
   ClientHeight := FramebufferProperties.PhysicalHeight;
-  if ClientHeight > 480 then ClientHeight := 480;
-  
-  ImageFormatManager := TImageFormatManager.Create;
-  ImageFormatHandler := CreateDefaultImageFormatHandler(ImageFormatManager);
+  if ClientHeight > 720 then ClientHeight := 720;
 
-  DeviceProvider := CreateDefaultProvider(ImageFormatManager);
+  DeviceProvider := TGLESProvider.Create(nil); {Force use of the GLES provider}
   EngineDevice := DeviceProvider.CreateDevice as TCustomSwapChainDevice;
 
   DisplaySize := Point2px(ClientWidth, ClientHeight);
-  EngineDevice.SwapChains.Add(Handle, DisplaySize);
+  EngineDevice.SwapChains.Add(Handle, DisplaySize, DefaultMultisamples);
 
+  if ClientWidth < FramebufferProperties.PhysicalWidth then
+    WindowX := (FramebufferProperties.PhysicalWidth - ClientWidth) div 2;
+  if ClientHeight < FramebufferProperties.PhysicalHeight then
+    WindowY := (FramebufferProperties.PhysicalHeight - ClientHeight) div 2;
+    
+  if (WindowX <> 0) or (WindowY <> 0) then
+    EngineDevice.Move(0, Point2px(WindowX, WindowY));
+  
   if not EngineDevice.Initialize then
   begin
     ConsoleWriteLn('Failed to initialize PXL Device.');
@@ -157,27 +164,17 @@ begin
   end;
   ConsoleWriteLn('Initialized PXL Canvas.');
   
-  EngineImages := TAtlasImages.Create(EngineDevice);
-
-  ImageLenna := EngineImages.AddFromFile(CrossFixFileName('C:\Lenna.png'));
-  if ImageLenna = -1 then
-  begin
-    ConsoleWriteLn('Could not load Lenna image.');
-    Exit;
-  end;
-  ConsoleWriteLn('Loaded Lenna image.');
-  
   EngineFonts := TBitmapFonts.Create(EngineDevice);
   EngineFonts.Canvas := EngineCanvas;
 
-  FontTahoma := EngineFonts.AddFromBinaryFile(CrossFixFileName('C:\Tahoma9b.font'));
-  if FontTahoma = -1 then
+  FontKristen := EngineFonts.AddFromBinaryFile(CrossFixFileName('C:\Kristen.font'));
+  if FontKristen = -1 then
   begin
-    ConsoleWriteLn('Could not load Tahoma font.');
+    ConsoleWriteLn('Could not load Kristen font.');
     Exit;
   end;
-  ConsoleWriteLn('Loaded Tahoma font.');
-
+  ConsoleWriteLn('Loaded Kristen font.');
+  
   EngineTimer := TMultimediaTimer.Create;
   EngineTimer.OnTimer := EngineTiming;
   EngineTimer.OnProcess := EngineProcess;
@@ -192,12 +189,9 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   EngineTimer.Free;
   EngineFonts.Free;
-  EngineImages.Free;
   EngineCanvas.Free;
   EngineDevice.Free;
   DeviceProvider.Free;
-  ImageFormatHandler.Free;
-  ImageFormatManager.Free;
 end;
 
 procedure TMainForm.ApplicationIdle(Sender: TObject);
@@ -221,7 +215,7 @@ begin
   try
     if EngineDevice.BeginScene then
     try
-      EngineDevice.Clear([TClearType.Color], 0);
+      EngineDevice.Clear([TClearType.Color], $FF4E4433);
     
       if EngineCanvas.BeginScene then
       try
@@ -230,7 +224,7 @@ begin
         EngineCanvas.EndScene;
       end;
     
-      { Invoke "EngineProcess" event (60 times per second, independently of rendering speed) to do processing and calculations 
+      { Invoke "EngineProcess" event (60 times per second, independently of rendering speed) to do processing and calculations
         while GPU is busy rendering the scene. }
       EngineTimer.Process;
     finally
@@ -243,78 +237,111 @@ end;
 
 procedure TMainForm.RenderScene;
 var
-  J, I: Integer;
-  Quad: Integer = 40;
-  Omega, Kappa: VectorFloat;
+ HexMtx: TMatrix3;
+ Omega, Kappa: Single;
+ HoleAt, HoleSize: TPoint2;
+ I: Integer;
 begin
-  // Draw gray background.
-  for J := 0 to DisplaySize.Y div Quad do
-    for I := 0 to DisplaySize.X div Quad do
-      EngineCanvas.FillQuad(
-        FloatRect4(I * Quad, J * Quad, Quad, Quad),
-        IntColor4($FF585858, $FF505050, $FF484848, $FF404040));
-
-  for I := 0 to DisplaySize.X div Quad do
+  // Draw gradient lines.
+  for I := 0 to DisplaySize.Y div 20 do
     EngineCanvas.Line(
-      Point2(I * Quad, 0.0),
-      Point2(I * Quad, DisplaySize.Y),
-      $FF555555);
+      Point2(0.0, 0.0), Point2(DisplaySize.X, I * 20.0),
+      IntColor2($FF837256, $FF4E4433));
 
-  for J := 0 to DisplaySize.Y div Quad do
-    EngineCanvas.Line(
-      Point2(0.0, J * Quad),
-      Point2(DisplaySize.X, J * Quad),
-      $FF555555);
+    for I := 0 to DisplaySize.X div 20 do
+      EngineCanvas.Line(
+        Point2(0.0, 0.0), Point2(I * 20.0, DisplaySize.Y),
+        IntColor2($FF837256, $FF4E4433));
 
-  // Draw an animated hole.
-  EngineCanvas.QuadHole(
-    Point2(0.0, 0.0),
-    DisplaySize,
-    Point2(
-      DisplaySize.X * 0.5 + Cos(EngineTicks * 0.0073) * DisplaySize.X * 0.25,
-      DisplaySize.Y * 0.5 + Sin(EngineTicks * 0.00312) * DisplaySize.Y * 0.25),
-    Point2(80.0, 100.0),
-    $20FFFFFF, $80955BFF, 16);
+  // Draw Hexagon.
+  HexMtx :=
+    // Make hexagon with dimensions of 50x50.
+    ScaleMtx3(Point2(50.0, 50.0)) *
+    // Rotate hexagon with time.
+    RotateMtx3(EngineTicks * 0.00371) *
+    // Position hexagon at one quarter of screen.
+    TranslateMtx3(Point2(DisplaySize.X * 0.25, DisplaySize.Y * 0.25));
 
-  // Draw the image of famous Lenna.
-  EngineCanvas.UseImage(EngineImages[ImageLenna]);
-  EngineCanvas.TexQuad(FloatRect4RC(
-    // TPoint2(DisplaySize) * 0.5  -  Internal Error in FPC
-    Point2(DisplaySize.X * 0.5, DisplaySize.Y * 0.5),
-    Point2(300.0, 300.0),
-    EngineTicks * 0.01),
-    IntColorAlpha(128));
+  EngineCanvas.FillHexagon(HexMtx, $00FF0000, $FFFFD728, $00FF0000, $FFFFD728, $00FF0000, $FFFFD728);
 
-  // Draw an animated Arc.
-  Omega := EngineTicks * 0.0274;
-  Kappa := 1.25 * Pi + Sin(EngineTicks * 0.01854) * 0.5 * Pi;
+  // Draw Arc.
+  Omega := EngineTicks * 0.01892;
+  Kappa := 1.25 * Pi + Sin(EngineTicks * 0.01241) * 0.5 * Pi;
 
   EngineCanvas.FillArc(
-    Point2(DisplaySize.X * 0.1, DisplaySize.Y * 0.9),
-    Point2(75.0, 50.0),
-    Omega, Omega + Kappa, 32,
-    IntColor4($FFFF0000, $FF00FF00, $FF0000FF, $FFFFFFFF));
+    Point2(DisplaySize.X * 0.75, DisplaySize.Y * 0.25),
+    Point2(70.0, 50.0), Omega, Omega + Kappa, 64,
+    IntColor4($FFA4E581, $FFFF9C00, $FF7728FF, $FFFFFFFF));
 
-  // Draw an animated Ribbon.
-  Omega := EngineTicks * 0.02231;
-  Kappa := 1.25 * Pi + Sin(EngineTicks * 0.024751) * 0.5 * Pi;
+  // Draw small Ribbon.
+  Omega := EngineTicks * 0.01134;
+  Kappa := 1.25 * Pi + Sin(EngineTicks * 0.014751) * 0.5 * Pi;
 
   EngineCanvas.FillRibbon(
-    Point2(DisplaySize.X * 0.9, DisplaySize.Y * 0.85),
-    Point2(25.0, 20.0),
-    Point2(70.0, 80.0),
-    Omega, Omega + Kappa, 32,
-    IntColor4($FFFF0000, $FF00FF00, $FF0000FF, $FFFFFFFF));
+    Point2(DisplaySize.X * 0.25, DisplaySize.Y * 0.75),
+    Point2(25.0, 20.0), Point2(45.0, 40.0), Omega, Omega + Kappa, 64,
+    IntColor4($FFFF244F, $FFACFF0D, $FF2B98FF, $FF7B42FF));
 
-  EngineFonts[FontTahoma].DrawText(
+  // Draw large Ribbon.
+  Omega := EngineTicks * 0.01721;
+  Kappa := 1.25 * Pi + Sin(EngineTicks * 0.01042) * 0.5 * Pi;
+
+  EngineCanvas.FillRibbon(
+    Point2(DisplaySize.X * 0.25, DisplaySize.Y * 0.75),
+    Point2(50.0, 45.0), Point2(70.0, 65.0),
+    Omega, Omega + Kappa, 64,
+    $FFFF244F, $FFACFF0D, $FF2B98FF, $FFA4E581, $FFFF9C00, $FF7728FF);
+
+  // Draw hole with smooth internal border (using tape).
+  HoleAt := Point2(
+   DisplaySize.X * 0.75 + Cos(EngineTicks * 0.00718) * DisplaySize.X * 0.15,
+   DisplaySize.Y * 0.75 + Sin(EngineTicks * 0.00912) * DisplaySize.Y * 0.15);
+
+  HoleSize := Point2(40.0, 40.0);
+
+  EngineCanvas.QuadHole(
+    Point2(DisplaySize.X * 0.5, DisplaySize.Y * 0.5),
+    Point2(DisplaySize.X * 0.5, DisplaySize.Y * 0.5),
+    HoleAt, HoleSize,
+    $004E4433, $FFE4DED5, 64);
+
+  EngineCanvas.FillRibbon(
+    HoleAt, HoleSize * 0.75, HoleSize, 0.0, 2.0 * Pi, 64,
+    $004E4433, $004E4433, $004E4433, $FFE4DED5, $FFE4DED5, $FFE4DED5);
+
+  // Draw information text.
+  EngineFonts[FontKristen].DrawTextCentered(
+    Point2ToPx(Point2(DisplaySize.X * 0.25, DisplaySize.Y * 0.25 + 70.0)),
+    'Hexagon',
+    IntColor2($FFFFD25D, $FFFF0036));
+
+  EngineFonts[FontKristen].DrawTextCentered(
+    Point2ToPx(Point2(DisplaySize.X * 0.75, DisplaySize.Y * 0.25 + 70.0)),
+    'Arc',
+    IntColor2($FFE5FF3B, $FF00FF00));
+
+  EngineFonts[FontKristen].DrawTextCentered(
+    Point2ToPx(Point2(DisplaySize.X * 0.25, DisplaySize.Y * 0.75 + 80.0)),
+    'Tapes',
+    IntColor2($FFEAFAFF, $FF7B42FF));
+
+  EngineFonts[FontKristen].DrawTextCentered(
+    Point2ToPx(Point2(DisplaySize.X * 0.75, DisplaySize.Y * 0.75 + 80.0)),
+    'Hole + tape',
+    IntColor2($FFFFF4B3, $FFA9824C));
+
+  EngineFonts[FontKristen].DrawText(
     Point2(4.0, 4.0),
-    'FPS: ' + UniString(IntToStr(EngineTimer.FrameRate)),
-    IntColor2($FFFFE887, $FFFF0000));
+    'FPS: ' + UniString(IntToStr(EngineTimer.FrameRate)) + ', Cache Stall: ' + UniString(IntToStr(CacheStall)),
+    IntColor2($FFFFFF62, $FFFF8424), 1.0);
 
-  EngineFonts[FontTahoma].DrawText(
-    Point2(4.0, 24.0),
+  EngineFonts[FontKristen].DrawText(
+    Point2(4.0, 34.0),
     'Technology: ' + UniString(GetFullDeviceTechString(EngineDevice)),
     IntColor2($FFE8FFAA, $FF12C312));
+
+  EngineCanvas.Flush;
+  CacheStall := EngineCanvas.CacheStall;
 end;
   
 begin

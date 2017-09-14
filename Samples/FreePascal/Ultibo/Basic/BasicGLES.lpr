@@ -1,4 +1,4 @@
-program Basic;
+program BasicGLES;
 {
   This file is part of Asphyre Framework, also known as Platform eXtended Library (PXL).
   Copyright (c) 2000 - 2016  Yuriy Kotsarenko
@@ -26,7 +26,8 @@ program Basic;
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
   
-  This version of the example uses software redenering and will work on any supported platform.
+  This version of the example uses OpenGL ES and will only work on platforms where OpenGL ES
+  is supported.
 }
 
 {$mode delphi}{$H+}
@@ -51,8 +52,10 @@ uses
   PXL.Providers,
   
   PXL.Classes,
-  PXL.Providers.Auto,
-  PXL.ImageFormats.Auto;
+  PXL.Providers.GLES, {Include the GLES provider instead of the Auto provider}
+  PXL.ImageFormats.Auto,
+  
+  VC4;                {Include the VC4 unit to enable OpenGL ES support}
   
 type
   TMainForm = class(TObject)
@@ -61,6 +64,10 @@ type
   private
     Name: String;
     Handle: THandle;
+    
+    WindowX: Integer;
+    WindowY: Integer;
+    
     ClientWidth: Integer;
     ClientHeight: Integer;
   
@@ -129,19 +136,27 @@ begin
   
   Handle := THandle(FramebufferDevice);
   ClientWidth := FramebufferProperties.PhysicalWidth;
-  if ClientWidth > 640 then ClientWidth := 640;
+  if ClientWidth > 1280 then ClientWidth := 1280;
   ClientHeight := FramebufferProperties.PhysicalHeight;
-  if ClientHeight > 480 then ClientHeight := 480;
+  if ClientHeight > 720 then ClientHeight := 720;
   
   ImageFormatManager := TImageFormatManager.Create;
   ImageFormatHandler := CreateDefaultImageFormatHandler(ImageFormatManager);
 
-  DeviceProvider := CreateDefaultProvider(ImageFormatManager);
+  DeviceProvider := TGLESProvider.Create(ImageFormatManager); {Force use of the GLES provider}
   EngineDevice := DeviceProvider.CreateDevice as TCustomSwapChainDevice;
 
   DisplaySize := Point2px(ClientWidth, ClientHeight);
   EngineDevice.SwapChains.Add(Handle, DisplaySize);
 
+  if ClientWidth < FramebufferProperties.PhysicalWidth then
+    WindowX := (FramebufferProperties.PhysicalWidth - ClientWidth) div 2;
+  if ClientHeight < FramebufferProperties.PhysicalHeight then
+    WindowY := (FramebufferProperties.PhysicalHeight - ClientHeight) div 2;
+    
+  if (WindowX <> 0) or (WindowY <> 0) then
+    EngineDevice.Move(0, Point2px(WindowX, WindowY));
+  
   if not EngineDevice.Initialize then
   begin
     ConsoleWriteLn('Failed to initialize PXL Device.');
@@ -244,7 +259,7 @@ end;
 procedure TMainForm.RenderScene;
 var
   J, I: Integer;
-  Quad: Integer = 40;
+  Quad: Integer = 100;
   Omega, Kappa: VectorFloat;
 begin
   // Draw gray background.

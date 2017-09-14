@@ -32,11 +32,15 @@ type
 implementation
 
 uses
-{$IFDEF SINGLEBOARD}
-  PXL.Devices.GLES.RPi,
+{$IFDEF ULTIBO}
+ PXL.Devices.GLES.Ultibo,
 {$ELSE}
-  {$IFNDEF ANDROID}
-    PXL.Devices.GLES.X,
+  {$IFDEF SINGLEBOARD}
+    PXL.Devices.GLES.RPi,
+  {$ELSE}
+    {$IFNDEF ANDROID}
+      PXL.Devices.GLES.X,
+    {$ENDIF}
   {$ENDIF}
 {$ENDIF}
 

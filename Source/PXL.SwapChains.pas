@@ -113,6 +113,13 @@ type
       providers. }
     procedure Reset; virtual;
 
+    {$IFDEF ULTIBO}
+    { Changes the position of the window associated with the swap chain identified by the given index. The first swap chain has index
+      of zero. If the index is outside of valid range or the window cannot be moved, the returned value is @False and the position
+      of the window remains unchanged. }
+    function Move(const SwapChainIndex: Integer; const NewPosition: TPoint2px): Boolean; virtual;
+    {$ENDIF}
+    
     { Changes size of the back-buffer tied to swap chain identified by the given index. The first swap chain has index
       of zero. If the index is outside of valid range or the swap chain cannot be resized, the returned value
       is @False and the size of swap chain remains unchanged. If this method succeeds, the swap chain will have its
@@ -255,6 +262,13 @@ function TCustomSwapChainDevice.MayRender(const SwapChainIndex: Integer): Boolea
 begin
   Result := True;
 end;
+
+{$IFDEF ULTIBO}
+function TCustomSwapChainDevice.Move(const SwapChainIndex: Integer; const NewPosition: TPoint2px): Boolean; 
+begin
+  Result := False;
+end;
+{$ENDIF}
 
 function TCustomSwapChainDevice.Resize(const SwapChainIndex: Integer; const NewSize: TPoint2px): Boolean;
 var

@@ -21,6 +21,8 @@ unit PXL.Boards.PI.BCM;
 }
 interface
 
+{$INCLUDE PXL.Config.inc}
+
 {$IFDEF FPC}
   {$PACKRECORDS C}
 {$ELSE}
@@ -554,6 +556,12 @@ function vc_dispmanx_element_add(update: DISPMANX_UPDATE_HANDLE_T; display: DISP
   transform: DISPMANX_TRANSFORM_T): DISPMANX_ELEMENT_HANDLE_T; cdecl;
   external lib_bcm_host name 'vc_dispmanx_element_add';
 
+{ New function added to VCHI to change attributes, set_opacity does not work there }
+function vc_dispmanx_element_change_attributes(update: DISPMANX_UPDATE_HANDLE_T; element: DISPMANX_ELEMENT_HANDLE_T;
+  change_flags: LongWord; layer: LongInt; opacity: Byte; dest_rect: PVC_RECT_T; src_rect: PVC_RECT_T;
+  mask: DISPMANX_RESOURCE_HANDLE_T; transform: DISPMANX_TRANSFORM_T): LongInt; cdecl;
+  external lib_bcm_host name 'vc_dispmanx_element_change_attributes';
+  
 { End an update and wait for it to complete }
 function vc_dispmanx_update_submit_sync(update: DISPMANX_UPDATE_HANDLE_T): LongInt; cdecl;
   external lib_bcm_host name 'vc_dispmanx_update_submit_sync';

@@ -1,4 +1,4 @@
-program Combustion;
+program CombustionGLES;
 {
   This file is part of Asphyre Framework, also known as Platform eXtended Library (PXL).
   Copyright (c) 2000 - 2016  Yuriy Kotsarenko
@@ -26,7 +26,8 @@ program Combustion;
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
   
-  This version of the example uses software redenering and will work on any supported platform.
+  This version of the example uses OpenGL ES and will only work on platforms where OpenGL ES
+  is supported.
 }
 
 {
@@ -62,8 +63,10 @@ uses
   PXL.Scripts,
   PXL.Classes,
   
-  PXL.Providers.Auto,
-  PXL.Archives.Loading;
+  PXL.Providers.GLES, {Include the GLES provider instead of the Auto provider}
+  PXL.Archives.Loading,
+  
+  VC4;                {Include the VC4 unit to enable OpenGL ES support}
   
 type
   TMainForm = class(TObject)
@@ -72,6 +75,10 @@ type
   private
     Name: String;
     Handle: THandle;
+    
+    WindowX: Integer;
+    WindowY: Integer;
+    
     ClientWidth: Integer;
     ClientHeight: Integer;
 
@@ -222,16 +229,24 @@ begin
   
   Handle := THandle(FramebufferDevice);
   ClientWidth := FramebufferProperties.PhysicalWidth;
-  if ClientWidth > 640 then ClientWidth := 640;
+  if ClientWidth > 800 then ClientWidth := 800;
   ClientHeight := FramebufferProperties.PhysicalHeight;
-  if ClientHeight > 480 then ClientHeight := 480;
+  if ClientHeight > 600 then ClientHeight := 600;
   
-  DeviceProvider := CreateDefaultProvider;
+  DeviceProvider := TGLESProvider.Create(nil); {Force use of the GLES provider}
   EngineDevice := DeviceProvider.CreateDevice as TCustomSwapChainDevice;
 
   DisplaySize := Point2px(ClientWidth, ClientHeight);
   EngineDevice.SwapChains.Add(Handle, DisplaySize, 0, True);
 
+  if ClientWidth < FramebufferProperties.PhysicalWidth then
+    WindowX := (FramebufferProperties.PhysicalWidth - ClientWidth) div 2;
+  if ClientHeight < FramebufferProperties.PhysicalHeight then
+    WindowY := (FramebufferProperties.PhysicalHeight - ClientHeight) div 2;
+    
+  if (WindowX <> 0) or (WindowY <> 0) then
+    EngineDevice.Move(0, Point2px(WindowX, WindowY));
+  
   if not EngineDevice.Initialize then
   begin
     ConsoleWriteLn('Failed to initialize PXL Device.');
@@ -286,8 +301,7 @@ begin
   EngineFonts := TBitmapFonts.Create(EngineDevice);
   EngineFonts.Canvas := EngineCanvas;
 
-  //FontVerdana := LoadFontFromArchive('Verdana.font', EngineFonts, EngineArchive); //To Do //Currently fails to load
-  FontVerdana := EngineFonts.AddFromBinaryFile(CrossFixFileName('C:\Tahoma9b.font'));
+  FontVerdana := LoadFontFromArchive('Verdana.font', EngineFonts, EngineArchive); 
   if FontVerdana = -1 then
   begin
     ConsoleWriteLn('Could not load Verdana font from archive.');
@@ -410,14 +424,14 @@ begin
     for I := 0 to DisplaySize.X div 64 do
     begin
       EngineCanvas.UseImage(EngineImages[ImageScanline]);
-      EngineCanvas.TexQuad(FloatRect4(I * 64, J * 64, 64, 64), IntColorWhite4, TBlendingEffect.Add); //To Do //Previously TBlendingEffect.Multiply which is not implemented for software rendering
+      EngineCanvas.TexQuad(FloatRect4(I * 64, J * 64, 64, 64), IntColorWhite4, TBlendingEffect.Multiply); 
     end;
 
   // Draw some fill for status background.
   DrawAt.X := (DisplaySize.X - StatusSize.X) div 2;
   DrawAt.Y := LogoSize.Y + ((DisplaySize.Y - StatusSize.Y) div 2);
 
-  EngineCanvas.FillRect(DrawAt.X, DrawAt.Y, StatusSize.X, StatusSize.Y, $FF5F5F5F, TBlendingEffect.Add); //To Do //Previously TBlendingEffect.Multiply which is not implemented for software rendering
+  EngineCanvas.FillRect(DrawAt.X, DrawAt.Y, StatusSize.X, StatusSize.Y, $FF5F5F5F, TBlendingEffect.Multiply);
   EngineCanvas.FillRect(DrawAt.X, DrawAt.Y, StatusSize.X, StatusSize.Y, $FF1F1F1F, TBlendingEffect.Add);
   EngineCanvas.FrameRect(FloatRect(DrawAt.X, DrawAt.Y, StatusSize.X, StatusSize.Y), $FF3F3F3F, TBlendingEffect.Add);
 

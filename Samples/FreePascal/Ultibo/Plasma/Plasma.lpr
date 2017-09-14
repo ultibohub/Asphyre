@@ -25,6 +25,8 @@ program Plasma;
   To convert this example to Raspberry Pi A/B/A+/B+/Zero create a new project then copy and
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
+  
+  This version of the example uses software redenering and will work on any supported platform.
 }
 
 {$mode delphi}{$H+}

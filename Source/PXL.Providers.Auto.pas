@@ -35,7 +35,11 @@ uses
   Windows, PXL.Providers.DX9, PXL.Providers.DX11
 {$ELSE}
   {$IFDEF ULTIBO}
-   PXL.Providers.SRT
+    {$IFDEF ULTIBO_GLES}
+      PXL.Providers.GLES
+    {$ELSE}
+      PXL.Providers.SRT
+    {$ENDIF}
   {$ELSE}
     {$IFDEF SINGLEBOARD}
       PXL.Providers.GLES
@@ -102,7 +106,11 @@ begin
     Result := TDX9Provider.Create(AImageFormatManager);
 {$ELSE}
   {$IFDEF ULTIBO}
-    Result := TSRTProvider.Create(AImageFormatManager);
+    {$IFDEF ULTIBO_GLES}
+      Result := TGLESProvider.Create(AImageFormatManager);
+    {$ELSE}
+      Result := TSRTProvider.Create(AImageFormatManager);
+    {$ENDIF}
   {$ELSE}
     {$IFDEF SINGLEBOARD}
       Result := TGLESProvider.Create(AImageFormatManager);
