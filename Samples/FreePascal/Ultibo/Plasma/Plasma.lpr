@@ -26,7 +26,7 @@ program Plasma;
   paste this code into it taking care to adjust the RaspberryPi2 unit in the uses clause as
   required.
   
-  This version of the example uses software redenering and will work on any supported platform.
+  This version of the example uses software rendering and will work on any supported platform.
 }
 
 {$mode delphi}{$H+}
