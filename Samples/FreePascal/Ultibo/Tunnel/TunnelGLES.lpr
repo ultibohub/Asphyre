@@ -33,6 +33,7 @@ program TunnelGLES;
 uses
   RaspberryPi2,
   GlobalConst,
+  Threads,
   Framebuffer,
   Console, 
   Classes,
