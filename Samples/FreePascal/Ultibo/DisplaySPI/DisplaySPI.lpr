@@ -49,6 +49,8 @@ uses
   
 const
   // Please make sure to specify the following pins according to Raspberry PI pin numbering scheme.
+  // These values are valid for an Adafruit PiTFT 3.5" LCD (https://www.adafruit.com/products/2441).
+  // Adjust as required for other displays using the same HX8357 chipset.
   PinRST = Integer(GPIO_PIN_UNKNOWN);
   PinDC = Integer(GPIO_PIN_25);
   
